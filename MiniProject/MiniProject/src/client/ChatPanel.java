@@ -15,7 +15,7 @@ public class ChatPanel extends JPanel{
 	{
 		this.cp=cp;
 		ta=new JTextArea();
-		JScrollPane js=new JScrollPane(ta);
+		JScrollPane js=new JScrollPane();
 		ta.setEditable(false);
 		
 		tf=new JTextField();
@@ -24,7 +24,7 @@ public class ChatPanel extends JPanel{
 		
 		String[] col= {"아이디","이름","성별"};
 		String[][] row=new String[0][3];
-		model=new DefaultTableModel();
+		model=new DefaultTableModel(row,col);
 		table=new JTable(model);
 		JScrollPane js1=new JScrollPane(table);
 		
@@ -40,9 +40,12 @@ public class ChatPanel extends JPanel{
 		add(js1);
 		
 		JPanel p=new JPanel();
-		p.add(b1);p.add(b2);
+		p.add(b1); p.add(b2);
 		
 		p.setBounds(510, 330, 280, 35);
 		add(p);
+		
+		
+		
 	}
 }
