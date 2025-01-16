@@ -6,7 +6,7 @@ public class ShoesDAO {
 	private Connection conn;
 	private PreparedStatement ps;
 	private static ShoesDAO dao;
-	private final String URL="jdbc:oracle:thin:@1212:XE";
+	private final String URL="jdbc:oracle:thin:@211.238.142.124:1212:XE";
 	
 	public ShoesDAO()
 	{
@@ -28,7 +28,7 @@ public class ShoesDAO {
 	{
 		try
 		{
-			conn=DriverManager.getConnection(URL,"hr","happy");
+			conn=DriverManager.getConnection(URL,"hr_3","happy");
 		}catch (Exception ex) {
 			// TODO: handle exception
 		}
