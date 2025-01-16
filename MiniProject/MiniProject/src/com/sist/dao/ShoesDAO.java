@@ -6,7 +6,7 @@ public class ShoesDAO {
 	private Connection conn;
 	private PreparedStatement ps;
 	private static ShoesDAO dao;
-	private final String URL="jdbc:oracle:thin:@localhost:1521:XE";
+	private final String URL="jdbc:oracle:thin:@1212:XE";
 	
 	public ShoesDAO()
 	{

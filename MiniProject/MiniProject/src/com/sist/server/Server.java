@@ -33,7 +33,7 @@ public class Server implements Runnable{
 	// 접속을 받는다 
 	ServerSocket ss;
 	// 클라이언트 => 서버 => 연결선 (숫자 => PORT)
-	final int PORT=3355;
+	final int PORT=1212;
 	// port => 0~65535 
 	// 0~1023 알려진 포트 => 80 : HTTP 
 	// 23 : FTP , 25 : SMTP ...
