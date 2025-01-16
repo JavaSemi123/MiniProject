@@ -43,17 +43,18 @@ public class ShoesDAO {
 			// TODO: handle exception
 		}
 	}
-	public List<ShoesVO> foodListData(int page)
+	public List<ShoesVO> ShoesListData(int page)
 	{
 		List<ShoesVO> list = new ArrayList<ShoesVO>();
 		try
 		{
 			getConnection();
-			String sql="SELECT fno,name,poster,num "
-						+"FROM (SELECT fno,name,poster,rownum as num "
-						+"FROM (SELECT /*+ INDEX_ASC(food_menupan fm_fno_pk)*/fno,name,poster "
-						+"FROM food_menupan))"
-						+"WHERE num BETWEEN ? AND ?";
+			String sql="SELECT goods_id,name_kr,img "
+					+ "FROM (SELECT goods_id, name_kor, img "
+					+ "FROM (SELECT /*+ INDEX_ASC(shoes sh_goods_id_pk)*/ goods_id, name_kor, img"
+					+ "FROM shoes))"
+					+ "WHERE goods_id BETWEEN 1 AND 10";
+						
 			ps=conn.prepareStatement(sql);
 			int rowSize=12;
 			int start=(rowSize*page)-(rowSize-1);
@@ -66,9 +67,9 @@ public class ShoesDAO {
 			while(rs.next())
 			{
 				ShoesVO vo=new ShoesVO();
-				vo.setFno(rs.getInt(1));
-				vo.setName(rs.getString(2));
-				vo.setPoster("https://www.menupan.com"+rs.getString(3));
+				vo.setGoods_id(rs.getInt(1));
+				vo.setName_kor(rs.getString(2));
+				vo.setImg("https://kream-phinf.pstatic.net"+rs.getString(3));
 				list.add(vo);
 			}
 		   rs.close();
@@ -83,13 +84,13 @@ public class ShoesDAO {
 		}
 		return list;
 	}
-	public int foodTotalPage()
+	public int shoesTotalPage()
 	{
 		int total=0;
 		try
 		{
 			getConnection();
-			String sql="SELECT CEIL(COUNT(*)/12.0) FROM food_menupan";
+			String sql="SELECT CEIL(COUNT(*)/12.0) FROM shoes";
 			ps=conn.prepareStatement(sql);
 			ResultSet rs=ps.executeQuery();
 			rs.next();

@@ -6,7 +6,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="MiniProject/MiniProject/src"/>
-	<classpathentry kind="src" path="MiniProject/src"/>
 	<classpathentry kind="lib" path="C:/Users/sist-106/Desktop/jar/jsoup-1.18.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/sist-106/Desktop/jar/JTattoo-1.6.13.jar"/>
 	<classpathentry kind="lib" path="C:/Users/sist-106/Desktop/jar/lombok-1.18.36.jar"/>
