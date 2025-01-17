@@ -179,7 +179,7 @@ public class ShoesDAO {
 		try
 		{
 			getConnection();
-			String sql="select goods_id,img,name_kor,brand,color,release_price "
+			String sql="select goods_id,img,name_kor,brand,color,rt_price "
 				   +"FROM shoes "
 				   +"WHERE name_kor LIKE '%'||?||'%' AND rownum<=10 "
 				   +"ORDER BY goods_id ASC";

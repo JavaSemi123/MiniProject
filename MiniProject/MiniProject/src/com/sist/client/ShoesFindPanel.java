@@ -125,7 +125,7 @@ implements ActionListener
 					vo.getName_kor(),
 					vo.getBrand(),
 					vo.getColor(),
-					vo.getRelease_price()
+					vo.getRt_price()
 				};
 				model.addRow(data);
 			}catch(Exception ex){}
