@@ -117,7 +117,7 @@ public class ShoesDAO {
 			   String sql="select goods_id,name_kor,img,num "
 						+ "from (select goods_id,name_kor,img,rownum as num "
 						+ "from (select /*+ index_asc(shoes sh_goods_id_pk)*/goods_id,name_kor,img "
-						+ "from shoes WHERE type LiKE '%'||?||'%')) "
+						+ "from shoes WHERE brand LiKE '%'||?||'%')) "
 						+ "where num between ? and ?";
 			   ps=conn.prepareStatement(sql);
 			   ps.setString(1, brand);
@@ -156,7 +156,7 @@ public class ShoesDAO {
 			getConnection();
 			String sql="SELECT CEIL(COUNT(*)/12.0) "
 					+"FROM shoes "
-					+"WHERE name_kor LIKE '%'||?||'%'";
+					+"WHERE brand LIKE '%'||?||'%'";
 			ps=conn.prepareStatement(sql);
 			ps.setString(1, brand);
 			ResultSet rs=ps.executeQuery();
@@ -194,7 +194,7 @@ public class ShoesDAO {
 				vo.setName_kor(rs.getString(3));
 				vo.setBrand(rs.getString(4));
 				vo.setColor(rs.getString(5));
-				vo.setRelease_price(rs.getString(6));
+				vo.setRt_price(rs.getInt(6));
 				list.add(vo);
 			}
 			rs.close();
