@@ -38,10 +38,10 @@ implements MouseListener,ActionListener
 	    	p.add(b1); p.add(la); p.add(b2);
 	    	// add => 코딩 순서로 배치
 	    	add("South",p);
-	    	print();
 	    	
 	    	b1.addActionListener(this);//이전
 	    	b2.addActionListener(this);//다음 
+	    	print();
 	    }
 	    // 초기화 
 	    public void init()
@@ -65,8 +65,7 @@ implements MouseListener,ActionListener
 	    		try
 	    		{
 	    			URL url=new URL(vo.getImg());
-	    			Image image=
-	    				ImageChange.getImage(new ImageIcon(url), 200, 180);
+	    			Image image=ImageChange.getImage(new ImageIcon(url), 200, 180);
 	    			imgs[i]=new JLabel(new ImageIcon(image));
 	    			imgs[i].setToolTipText(vo.getName_kor()+"^"+vo.getGoods_id());
 	    			pan.add(imgs[i]);
@@ -79,7 +78,20 @@ implements MouseListener,ActionListener
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			// TODO Auto-generated method stub
-			
+			for(int i=0;i<imgs.length;i++)
+			{
+				if(e.getSource()==imgs[i])
+				{
+					if(e.getClickCount()==2)
+					{
+						String goods_id=imgs[i].getToolTipText();
+						goods_id=goods_id.substring(goods_id.lastIndexOf("^")+1);
+						ShoesVO vo=dao.shoesDetailData(Integer.parseInt(goods_id));
+						cp.sdp.detailPrint(1, vo);
+						cp.card.show(cp, "DETAIL");
+					}
+				}
+			}
 		}
 		@Override
 		public void mousePressed(MouseEvent e) {

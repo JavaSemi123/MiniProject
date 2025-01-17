@@ -107,5 +107,132 @@ public class ShoesDAO {
 		return total;
 	}
 	// 2. 상세보기 => 조회수 증가
-	
+	   public List<ShoesVO> shoesBrandData(int page,String brand)
+	   {
+		   List<ShoesVO> list=new ArrayList<ShoesVO>();
+		   
+		   try
+		   {
+			   getConnection();
+			   String sql="select goods_id,name_kor,img,num "
+						+ "from (select goods_id,name_kor,img,rownum as num "
+						+ "from (select /*+ index_asc(shoes sh_goods_id_pk)*/goods_id,name_kor,img "
+						+ "from shoes WHERE type LiKE '%'||?||'%')) "
+						+ "where num between ? and ?";
+			   ps=conn.prepareStatement(sql);
+			   ps.setString(1, brand);
+			   int rowSize=12;
+			   int start=(rowSize*page)-(rowSize-1);
+			   int end=rowSize*page;
+			   
+			   ps.setInt(2, start);
+			   ps.setInt(3, end);
+			   
+			   ResultSet rs=ps.executeQuery();
+			   while(rs.next())
+			   {
+				    ShoesVO vo=new ShoesVO();
+					vo.setGoods_id(rs.getInt(1));
+					vo.setName_kor(rs.getString(2));
+					vo.setImg(rs.getString(3));
+				    list.add(vo);
+			   }
+			   rs.close();
+		   }catch (Exception ex) {
+			// TODO: handle exception
+			   ex.printStackTrace();
+		}
+		finally
+		{
+			disConnection();
+		}
+		return list;
+	}
+	public int shoesBrandTotalPage(String brand)
+	{
+		int total=0;
+		try
+		{
+			getConnection();
+			String sql="SELECT CEIL(COUNT(*)/12.0) "
+					+"FROM shoes "
+					+"WHERE name_kor LIKE '%'||?||'%'";
+			ps=conn.prepareStatement(sql);
+			ps.setString(1, brand);
+			ResultSet rs=ps.executeQuery();
+			rs.next();
+			total=rs.getInt(1);
+			rs.close();
+		}catch (Exception ex) {
+			// TODO: handle exception
+			ex.printStackTrace();
+		}
+		finally
+		{
+			disConnection();
+		}
+		return total;
+	}
+	public List<ShoesVO> shoesFindData(String name_kor)
+	{
+		List<ShoesVO> list=new ArrayList<ShoesVO>();
+		try
+		{
+			getConnection();
+			String sql="select goods_id,img,name_kor,brand,color,release_price "
+				   +"FROM shoes "
+				   +"WHERE name_kor LIKE '%'||?||'%' AND rownum<=10 "
+				   +"ORDER BY goods_id ASC";
+			ps=conn.prepareStatement(sql);
+			ps.setString(1, name_kor);
+			ResultSet rs=ps.executeQuery();
+			while(rs.next())
+			{
+				ShoesVO vo=new ShoesVO();
+				vo.setGoods_id(rs.getInt(1));
+				vo.setImg(rs.getString(2));
+				vo.setName_kor(rs.getString(3));
+				vo.setBrand(rs.getString(4));
+				vo.setColor(rs.getString(5));
+				vo.setRelease_price(rs.getString(6));
+				list.add(vo);
+			}
+			rs.close();
+		}catch (Exception ex) {
+			// TODO: handle exception
+			ex.printStackTrace();
+		}
+		finally
+		{
+			disConnection();
+		}
+		return list;
+	}
+	public ShoesVO shoesDetailData(int goods_id)
+	{
+		ShoesVO vo=new ShoesVO();
+		try
+		{
+			getConnection();
+			String sql="SELECT name_kor,brand,type,color,img,rt_price FROM shoes WHERE goods_id="+goods_id;
+			ps=conn.prepareStatement(sql);
+			ResultSet rs=ps.executeQuery();
+			rs.next();
+			vo.setName_kor(rs.getString(1));
+			vo.setBrand(rs.getString(2));
+			vo.setType(rs.getString(3));
+			vo.setColor(rs.getString(4));
+			vo.setImg(rs.getString(5));
+			vo.setRt_price(rs.getInt(6));
+			rs.close();
+		}catch (Exception ex) {
+			// TODO: handle exception
+			ex.printStackTrace();
+		}
+		finally
+		{
+			disConnection();
+		}
+		return vo;
+	}
 }

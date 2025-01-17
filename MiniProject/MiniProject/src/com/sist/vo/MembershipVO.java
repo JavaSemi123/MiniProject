@@ -3,7 +3,7 @@ import java.util.*;
 
 public class MembershipVO {
 	private String id,pwd,name,sex,email,address,msg;
-	private Date birthday,regdate;
+	private Date birthday;
 	public String getId() {
 		return id;
 	}
@@ -51,15 +51,7 @@ public class MembershipVO {
 	}
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
-	}
-	public Date getRegdate() {
-		return regdate;
-	}
-	public void setRegdate(Date regdate) {
-		this.regdate = regdate;
-	}
-	
-	
+	}	
 	
 }
 

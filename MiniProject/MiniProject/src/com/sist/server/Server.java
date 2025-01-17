@@ -152,6 +152,35 @@ public class Server implements Runnable {
 						}
 					}
 					break;
+					 case Function.WAITCHAT:
+					  {
+						  messageAll(Function.WAITCHAT+"|["
+								  +name+"] "+st.nextToken());
+					  }
+					  break;
+					  case Function.EXIT:
+					  {
+						  messageAll(Function.EXIT+"|"+id);
+						  messageAll(Function.WAITCHAT+"|[알림]"
+								  +name+"님이 퇴장하셨습니다");
+						  for(int i=0;i<waitVc.size();i++)
+						  {
+							  Client c=waitVc.get(i);
+							  if(c.id.equals(id))
+							  {
+								  messageTo(Function.MYEXIT+"|");
+								  waitVc.remove(i);
+								  // 접속자명단 제거 
+								  try
+								  {
+									  // 통신 중단 
+									  in.close();
+									  out.close();
+								  }catch(Exception ex) {}
+							  }
+						  }
+					  }
+					  break;
 					}
 				}
 			}catch(Exception ex) {}
