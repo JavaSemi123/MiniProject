@@ -67,7 +67,7 @@ implements ActionListener
 		
 		JPanel p=new JPanel();
 		p.add(b1);p.add(b2);p.add(b3);
-		p.setBounds(330, 590, 435, 35);
+		p.setBounds(330, 525, 435, 35);
 		add(p);
 		
 		b3.addActionListener(this);

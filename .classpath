@@ -6,9 +6,8 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="MiniProject/MiniProject/src"/>
-	<classpathentry kind="lib" path="C:/Users/sist-106/Desktop/jar/jsoup-1.18.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/sist-106/Desktop/jar/JTattoo-1.6.13.jar"/>
-	<classpathentry kind="lib" path="C:/Users/sist-106/Desktop/jar/lombok-1.18.36.jar"/>
-	<classpathentry kind="lib" path="C:/Users/sist-106/Desktop/jar/ojdbc11.jar"/>
+	<classpathentry kind="lib" path="C:/OracleDev/ojdbc8.jar"/>
+	<classpathentry kind="lib" path="C:/JavaDev/lombok-1.18.36.jar"/>
+	<classpathentry kind="lib" path="C:/Users/SIST-112/Downloads/JTattoo-1.6.13.jar"/>
 	<classpathentry kind="output" path="MiniProject/bin"/>
 </classpath>
