@@ -86,8 +86,7 @@ implements ActionListener,MouseListener
      		try
      		{
      			URL url=new URL(vo.getImg());
-     			Image image=
-     				ImageChange.getImage(new ImageIcon(url), 200, 180);
+     			Image image=ImageChange.getImage(new ImageIcon(url), 200, 180);
      			imgs[i]=new JLabel(new ImageIcon(image));
      			imgs[i].setToolTipText(vo.getName_kor()+"^"+vo.getGoods_id());
      			pan.add(imgs[i]);
@@ -97,6 +96,24 @@ implements ActionListener,MouseListener
      	}
      	la.setText(curpage+" page / "+totalpage+" pages");
      }
+     public void printData(List<ShoesVO> list) {
+ 	    pan.removeAll();
+ 	    for (int i = 0; i < list.size(); i++) {
+ 	        ShoesVO vo = list.get(i);
+ 	        try {
+ 	            URL url = new URL(vo.getImg());
+ 	            Image image = ImageChange.getImage(new ImageIcon(url), 200, 180);
+ 	            imgs[i] = new JLabel(new ImageIcon(image));
+ 	            imgs[i].setToolTipText(vo.getName_kor() + "^" + vo.getGoods_id());
+ 	            pan.add(imgs[i]);
+ 	            imgs[i].addMouseListener(this);
+ 	        } catch (Exception ex) {
+ 	            ex.printStackTrace();
+ 	        }
+ 	    }
+ 	    la.setText(curpage + " page / " + totalpage + " pages");
+ 	    pan.validate();
+ 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -109,8 +126,7 @@ implements ActionListener,MouseListener
 				{
 					String goods_id=imgs[i].getToolTipText();
 					goods_id=goods_id.substring(goods_id.lastIndexOf("^")+1);
-					ShoesVO vo=
-						dao.shoesDetailData(Integer.parseInt(goods_id));
+					ShoesVO vo=dao.shoesDetailData(Integer.parseInt(goods_id));
 					cp.sdp.detailPrint(2, vo);
 					cp.card.show(cp, "DETAIL");
 				}
@@ -138,7 +154,7 @@ implements ActionListener,MouseListener
 		{
 			if(e.getSource()==imgs[i])
 			{
-				imgs[i].setBorder(new LineBorder(Color.green,3));
+				imgs[i].setBorder(new LineBorder(Color.ORANGE,3));
 			}
 		}
 	}
@@ -159,38 +175,66 @@ implements ActionListener,MouseListener
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		for(int i=0;i<genre.length;i++)
-		{
-			if(e.getSource()==genre[i])
-			{
-				strGenre=genre[i].getText();
-				// 버튼 문자열 읽기
-				// 현재페이지 => 1 => 메뉴 변경시 
-				curpage=1;
-				init();
-				print();
-			}
-		}
-		
-		// 이전 
-		if(e.getSource()==prev)
-		{
-			if(curpage>1)
-			{
-				curpage--;
-				init();
-				print();
-			}
-		}
-		else if(e.getSource()==next)
-		{
-			if(curpage<totalpage)
-			{
-				curpage++;
-				init();
-				print();
-			}
-		}
-		
+	    for (int i=0;i<genre.length;i++) 
+	    {
+	        if (e.getSource()==genre[i]) 
+	        {
+	            strGenre=genre[i].getText();
+	            curpage=1;
+
+	            // "etc" 선택 시 별도 로직 처리
+	            if("etc".equals(strGenre)) 
+	            {
+	                totalpage = dao.shoesBrandTotalPageEtc();
+	                init();
+	                List<ShoesVO> list = dao.shoesBrandDataEtc(curpage);
+	                printData(list);
+	            } 
+	            else 
+	            {
+	                totalpage=dao.shoesBrandTotalPage(strGenre);
+	                init();
+	                List<ShoesVO> list=dao.shoesBrandData(curpage, strGenre);
+	                printData(list);
+	            }
+	        }
+	    }
+
+	    // 이전
+	    if (e.getSource()==prev)
+	    {
+	        if (curpage > 1)
+	        {
+	            curpage--;
+	            init();
+	            if ("etc".equals(strGenre))
+	            {
+	                List<ShoesVO> list=dao.shoesBrandDataEtc(curpage);
+	                printData(list);
+	            } else
+	            {
+	                List<ShoesVO> list=dao.shoesBrandData(curpage, strGenre);
+	                printData(list);
+	            }
+	        }
+	    }
+	    // 다음
+	    if (e.getSource()==next)
+	    {
+	        if (curpage<totalpage)
+	        {
+	            curpage++;
+	            init();
+	            if ("etc".equals(strGenre))
+	            {
+	                List<ShoesVO> list=dao.shoesBrandDataEtc(curpage);
+	                printData(list);
+	            } else
+	            {
+	                List<ShoesVO> list=dao.shoesBrandData(curpage, strGenre);
+	                printData(list);
+	            }
+	        }
+	    }
 	}
 }

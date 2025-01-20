@@ -12,6 +12,10 @@ public class ControlPanel extends JPanel{
 	ShoesBrandPanel sbp;
     ShoesFindPanel sfp;
     ShoesDetailPanel sdp;
+    BoardList bList;
+    BoardInsert bInsert;
+    BoardDetail bDetail;
+    BoardUpdate bUpdate;
     CardLayout card=new CardLayout();
     public ControlPanel()
     {
@@ -30,6 +34,18 @@ public class ControlPanel extends JPanel{
     	
     	sdp=new ShoesDetailPanel(this);
     	add("DETAIL",sdp);
+    	
+    	bList=new BoardList(this);
+    	add("BLIST",bList);
+    	
+    	bInsert=new BoardInsert(this);
+    	add("BINSERT",bInsert);
+    	
+    	bDetail=new BoardDetail(this);
+    	add("BDETAIL",bDetail);
+    	
+    	bUpdate=new BoardUpdate(this);
+    	add("BUPDATE",bUpdate);
     }
 	
 }

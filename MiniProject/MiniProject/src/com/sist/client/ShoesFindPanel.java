@@ -11,7 +11,7 @@ import com.sist.dao.*;
 import java.util.List;
 // => 서버 연동 (X) 
 public class ShoesFindPanel extends JPanel
-implements ActionListener
+implements ActionListener,MouseListener
 {
      ControlPanel cp; // 상세보기 
      JTable table; // 모양관리 
@@ -25,7 +25,7 @@ implements ActionListener
      {
     	 this.cp=cp;
     	 String[] col={
-    		"번호","","이름","브랜드","색상","가격"
+    		"번호","사진","이름","브랜드","색상","가격"
     	 };
     	 Object[][] row=new Object[0][6];
     	 model=new DefaultTableModel(row,col)
@@ -52,6 +52,7 @@ implements ActionListener
 			// 상속없이 오버라이딩이 가능 => 익명의 클래스 (내부 클래스의 일종) 
     	 };
     	 table=new JTable(model);
+    	 table.getTableHeader().setReorderingAllowed(false);
     	 table.setRowHeight(40);
     	 JScrollPane js1=new JScrollPane(table);
     	 
@@ -87,6 +88,7 @@ implements ActionListener
     	 
     	 b.addActionListener(this);
     	 tf.addActionListener(this);
+    	 table.addMouseListener(this);
      }
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -130,5 +132,40 @@ implements ActionListener
 				model.addRow(data);
 			}catch(Exception ex){}
 		}
+	}
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource()==table)
+		{
+			if(e.getClickCount()==2)
+			{
+			int row=table.getSelectedRow();
+			String goods_id=model.getValueAt(row, 0).toString();
+			ShoesVO vo=dao.shoesDetailData(Integer.parseInt(goods_id));
+			cp.sdp.detailPrint(3, vo);
+			cp.card.show(cp, "DETAIL");
+			}
+		}
+	}
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

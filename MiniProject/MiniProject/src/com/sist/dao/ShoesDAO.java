@@ -235,4 +235,64 @@ public class ShoesDAO {
 		}
 		return vo;
 	}
+	public List<ShoesVO> shoesBrandDataEtc(int page) {
+	    List<ShoesVO> list=new ArrayList<>();
+	    try
+	    {
+	        getConnection();
+	        String sql = "SELECT goods_id, name_kor, img, rnum " +
+	                     "FROM ( " +
+	                     "SELECT goods_id, name_kor, img, ROW_NUMBER() OVER (ORDER BY goods_id) AS rnum " +
+	                     "FROM shoes " +
+	                     "WHERE brand NOT IN ('Nike', 'New Balance', 'Asics', 'Adidas')) " +
+	                     "WHERE rnum BETWEEN ? AND ?";
+	        ps=conn.prepareStatement(sql);
+	        int rowSize=12;
+	        int start=(rowSize*page)-(rowSize-1);
+	        int end=rowSize * page;
+	        ps.setInt(1, start);
+	        ps.setInt(2, end);
+	        ResultSet rs=ps.executeQuery();
+	        while (rs.next()) 
+	        {
+	            ShoesVO vo=new ShoesVO();
+	            vo.setGoods_id(rs.getInt(1));
+	            vo.setName_kor(rs.getString(2));
+	            vo.setImg(rs.getString(3));
+	            list.add(vo);
+	        }
+	        rs.close();
+	    } catch (Exception ex) {
+	        ex.printStackTrace();
+	    }
+	    finally
+	    {
+	        disConnection();
+	    }
+	    return list;
+	}
+
+	public int shoesBrandTotalPageEtc() 
+	{
+	    int total=0;
+	    try 
+	    {
+	        getConnection();
+	        String sql = "SELECT CEIL(COUNT(*) / 12.0) " +
+	                     "FROM shoes " +
+	                     "WHERE brand NOT IN ('Nike', 'New Balance', 'Asics', 'Adidas')";
+	        ps = conn.prepareStatement(sql);
+	        ResultSet rs = ps.executeQuery();
+	        rs.next();
+	        total = rs.getInt(1);
+	        rs.close();
+	    } catch (Exception ex) {
+	        ex.printStackTrace();
+	    }
+	    finally
+	    {
+	        disConnection();
+	    }
+	    return total;
+		}
 }

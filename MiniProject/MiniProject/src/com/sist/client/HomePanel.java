@@ -110,7 +110,7 @@ implements MouseListener,ActionListener
 			{
 				if(e.getSource()==imgs[i])
 				{
-					imgs[i].setBorder(new LineBorder(Color.red,3));
+					imgs[i].setBorder(new LineBorder(Color.ORANGE,3));
 				}
 			}
 		}
