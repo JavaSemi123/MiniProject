@@ -460,7 +460,6 @@ public class ReplyBoardDAO {
 	        getConnection();
 	        conn.setAutoCommit(false);
 
-	        // Step 1: Check the password
 	        String sql="SELECT pwd,root,depth "
 					  +"FROM replyBoard "
 					  +"WHERE no= ?";
@@ -474,18 +473,18 @@ public class ReplyBoardDAO {
 	            int depth = rs.getInt("depth");
 	            rs.close();
 
-	            // Step 2: If password matches, proceed
 	            if (dbPwd.equals(pwd)) {
 	                bCheck = true;
 
-	                // Step 3: If depth > 0, update content; else, delete
 	                if (depth == 0) {
-	                	sql="SELECT depth FROM replyBoard "
+	                	sql="DELETE FROM replyBoard "
 	 						   +"WHERE no= ?";
 	                	ps = conn.prepareStatement(sql);
 	                    ps.setInt(1, no);
 	                    ps.executeUpdate();
-	                } else {
+	                } 
+	                else 
+	                {
 	                    String msg = "관리자가 삭제한 게시물입니다";
 	                    sql="UPDATE replyBoard SET "
 	     					   +"subject=?,content=? "
@@ -496,8 +495,6 @@ public class ReplyBoardDAO {
 	                    ps.setInt(3, no);
 	                    ps.executeUpdate();
 	                }
-
-	                // Step 4: Update the root post's depth
 	                sql="UPDATE replyBoard SET "
 	 					   +"depth=depth-1 "
 	 					   +"WHERE no= ?";
@@ -506,17 +503,20 @@ public class ReplyBoardDAO {
 	                ps.executeUpdate();
 	            }
 	        }
-
 	        conn.commit();
 	    } catch (Exception ex) {
-	        try {
+	        try 
+	        {
 	            conn.rollback();
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
 	        ex.printStackTrace();
-	    } finally {
-	        try {
+	    } 
+	    finally 
+	    {
+	        try 
+	        {
 	            conn.setAutoCommit(true);
 	        } catch (Exception e) {
 	            e.printStackTrace();
