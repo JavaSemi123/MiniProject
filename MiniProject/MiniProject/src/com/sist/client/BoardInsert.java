@@ -19,7 +19,7 @@ implements ActionListener
     	titleLa=new JLabel("글쓰기",JLabel.CENTER);// <table>
     	titleLa.setFont(new Font("맑은 고딕",Font.BOLD,30)); //<h3></h3>
     	setLayout(null);
-    	titleLa.setBounds(10, 15, 620, 50);
+    	titleLa.setBounds(10, 15, 830, 50);
     	add(titleLa);
     	
     	nameLa=new JLabel("이름",JLabel.CENTER);

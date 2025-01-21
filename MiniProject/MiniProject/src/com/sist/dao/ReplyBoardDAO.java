@@ -107,13 +107,13 @@ public class ReplyBoardDAO {
 		return list;
 	}
 	// 1-1. 총페이지 
-	public int boardTotalPage()
+	public int boardRowCount()
 	{
 		int total=0;
 		try
 		{
 			getConnection();
-			String sql="SELECT CEIL(COUNT(*)/10.0) FROM replyBoard";
+			String sql="SELECT COUNT(*) FROM replyBoard";
 			ps=conn.prepareStatement(sql);
 			ResultSet rs=ps.executeQuery();
 			rs.next();
@@ -237,6 +237,56 @@ public class ReplyBoardDAO {
 	public boolean boardUpdate(ReplyBoardVO vo)
 	{
 		boolean bCheck=false;// 비밀번호 처리 
+		/*
+		 *    메소드 : 사용자 요청 처리 => 벤치마킹 : 메뉴,버튼 
+		 *    1) 사용자 요청값을 받는다
+		 *       => 매개변수  
+		 *    2) 요청처리후에 결과값 
+		 *       => 경우의 수 
+		 *       1. 목록 : List<~VO> 
+		 *       2. 상세보기 : ~VO
+		 *       3. 비밀번호 맞다 / 아니다 
+		 *                 ------------ boolean 
+		 *       4. 경우의 수가 3개 이상 
+		 *          String / int 
+		 *          ------ 알아볼 수 있게 처리 
+		 *          | 로그인 처리 
+		 *            => NOID / NOPWD / OK
+		 *     ---------------------------------
+		 *        자바 => 메소드 제작 
+		 *               --------- 데이터 확인 (VO) 
+		 *               
+		 *     1. 형식 => String  
+		 *        = INSERT 
+		 *          => DEFAULT가 많은 경우
+		 *          INSERT INTO table_name(컬럼,컬럼...)
+		 *          VLAUES(값...)
+		 *          => DEFAULT가 없는 경우 
+		 *          INSERT INTO table_name VALUES(값...)
+		 *          => 날짜 / 문자 => ''
+		 *             ---------------
+		 *             setString(1,값) => '값'
+		 *        = UPDATE 
+		 *          UPDATE table_name SET
+		 *          컬럼=값,컬럼=값....
+		 *          [WHERE 조건]
+		 *          
+		 *        = DELETE
+		 *          DELETE FROM table_name
+		 *          [WHERE 조건]
+		 *        --------------------------- 데이터가 변경된다 Commit 
+		 *          => COMMIT을 포함한 메소드 호출 
+		 *             executeUpdate()
+		 *        = SELECT : 이미 저장된 데이터를 검색
+		 *             데이터을 읽기 
+		 *             executeQuery()
+		 *             --------------- ResultSet 
+		 *      -----------------------------------
+		 *      웹개발 => 80% => DAO/VO
+		 *      ============  좌절감 => React => TanStack Query 
+		 *                                     ---------------
+		 *                                      Redux / Next
+		 */
 		try
 		{
 			getConnection();
@@ -276,16 +326,204 @@ public class ReplyBoardDAO {
 			
 		}catch(Exception ex)
 		{
-			
+			ex.printStackTrace();
 		}
 		finally
 		{
-			
+			disConnection();
 		}
 		return bCheck;
 	}
 	// 5. 답변 => 트랜잭션 
+	// 5. 답변 => 트랜잭션 
+	/*
+	 *    // => 100% / INDEX / VIEW 
+	 *    BLOB / BFILE
+	 *    GET/POST 
+	 *    --------- SESSION / COOKIE 
+	 *    --------- MVC 
+	 *    --------- DI / AOP / ORM 
+	 *    --------- Framework / Boot 
+	 *    
+	 *    try
+	 *    {
+	 *       getConnection(); 연결 
+	 *       conn.setAutoCommit(false); commit 해제 
+	 *       ----------------
+	 *       SQL => INSERT
+	 *       SQL => INSERT
+	 *       ----------------
+	 *       conn.commit();
+	 *    }catch(Exception ex)
+	 *    {
+	 *       ex.printStackTrace()
+	 *       try
+	 *       {
+	 *          conn.rollback() => SQL명령문 취소
+	 *       }catch(Exception e){}
+	 *    }
+	 *    finally
+	 *    {
+	 *       conn.setAutoCommit(true)
+	 *       disConnection()
+	 *    }
+	 *                 group_id group_step group_tab root depth
+	 *    AAAAA             1       0          0            2
+	 *      =>DDDDD         1       1          1     0    0
+	 *      =>BBBBB         1       2          1
+	 *       =>CCCCCC       1       3          2
+	 *      
+	 *      
+	 *    ASC
+	 */
+	public void replyInsert(int pno,ReplyBoardVO vo)
+	{
+		try
+		{
+			getConnection();
+			conn.setAutoCommit(false);
+			// SQL => 4개 
+			// 답변대상의 group_id,group_step,group_tab
+			String sql="SELECT group_id,group_step,group_tab "
+					  +"FROM replyBoard "
+					  +"WHERE no="+pno;
+			ps=conn.prepareStatement(sql);
+			ResultSet rs=ps.executeQuery();
+			rs.next();
+			int gi=rs.getInt(1);
+			int gs=rs.getInt(2);
+			int gt=rs.getInt(3);
+			rs.close();
+			
+			// 2.SQL => group_step을 변경 => 답변 핵심 
+			sql="UPDATE replyBoard SET "
+			   +"group_step=group_step+1 "
+			   +"WHERE group_id=? AND group_step>?";
+			ps=conn.prepareStatement(sql);
+			ps.setInt(1, gi);
+			ps.setInt(2, gs);
+			ps.executeUpdate(); // commit=>해제
+			
+			// 3. SQL => INSERT insert(sql,ReplyBoardVO vo)
+			sql="INSERT INTO replyBoard(no,name,subject,content,pwd,group_id,group_step,group_tab,root) "
+			+ "VALUES(rb_no_seq.nextval,?,?,?,?,?,?,?,?)";
+			ps=conn.prepareStatement(sql);
+			ps.setString(1, vo.getName());
+			ps.setString(2, vo.getSubject());
+			ps.setString(3, vo.getContent());
+			ps.setString(4, vo.getPwd());
+			ps.setInt(5, gi);
+			ps.setInt(6,gs+1);
+			ps.setInt(7, gt+1);
+			ps.setInt(8, pno);
+			ps.executeUpdate();
+			// 4. SQL => UPDATE
+			sql="UPDATE replyBoard SET "
+			   +"depth=depth+1 "
+			   +"WHERE no="+pno;
+			ps=conn.prepareStatement(sql);
+			ps.executeUpdate();
+			conn.commit();
+			// JSP => MyBatis 
+		}catch(Exception ex)
+		{
+			// 트랜잭션을 일괄처리 => 스프링 (1파트)
+			try
+			{
+				conn.rollback(); // 명령문 전체 취소 
+			}catch(Exception e) {}
+			ex.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				conn.setAutoCommit(true);//원상복귀
+			}catch(Exception ex) {}
+			disConnection();
+		}
+	}
 	// 6. 삭제 => 트랜잭션 
-	
-	
+	// 6. 삭제 => 트랜잭션 
+	// @Transactional
+	/*
+	 *   A a=new A();
+	 *   
+	 *   @Autowired
+	 *   A a;
+	 *   => Boot
+	 */
+	public boolean replyDelete(int no, String pwd) {
+	    boolean bCheck = false;
+
+	    try {
+	        getConnection();
+	        conn.setAutoCommit(false);
+
+	        // Step 1: Check the password
+	        String sql="SELECT pwd,root,depth "
+					  +"FROM replyBoard "
+					  +"WHERE no= ?";
+	        ps = conn.prepareStatement(sql);
+	        ps.setInt(1, no);
+	        ResultSet rs = ps.executeQuery();
+
+	        if (rs.next()) {
+	            String dbPwd = rs.getString("pwd");
+	            int root = rs.getInt("root");
+	            int depth = rs.getInt("depth");
+	            rs.close();
+
+	            // Step 2: If password matches, proceed
+	            if (dbPwd.equals(pwd)) {
+	                bCheck = true;
+
+	                // Step 3: If depth > 0, update content; else, delete
+	                if (depth == 0) {
+	                	sql="SELECT depth FROM replyBoard "
+	 						   +"WHERE no= ?";
+	                	ps = conn.prepareStatement(sql);
+	                    ps.setInt(1, no);
+	                    ps.executeUpdate();
+	                } else {
+	                    String msg = "관리자가 삭제한 게시물입니다";
+	                    sql="UPDATE replyBoard SET "
+	     					   +"subject=?,content=? "
+	     					   +"WHERE no=?";
+	                    ps = conn.prepareStatement(sql);
+	                    ps.setString(1, msg);
+	                    ps.setString(2, msg);
+	                    ps.setInt(3, no);
+	                    ps.executeUpdate();
+	                }
+
+	                // Step 4: Update the root post's depth
+	                sql="UPDATE replyBoard SET "
+	 					   +"depth=depth-1 "
+	 					   +"WHERE no= ?";
+	                ps = conn.prepareStatement(sql);
+	                ps.setInt(1, root);
+	                ps.executeUpdate();
+	            }
+	        }
+
+	        conn.commit();
+	    } catch (Exception ex) {
+	        try {
+	            conn.rollback();
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	        ex.printStackTrace();
+	    } finally {
+	        try {
+	            conn.setAutoCommit(true);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	        disConnection();
+	    }
+
+	    return bCheck;
+	}
 }

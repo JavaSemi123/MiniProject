@@ -91,7 +91,8 @@ implements ActionListener
      public void print(int type,int n)
      {
     	 // 데이터베이스 연동 
-    	 ReplyBoardDAO dao=ReplyBoardDAO.newInstance();
+    	 ReplyBoardDAO dao=
+    			 ReplyBoardDAO.newInstance();
     	 ReplyBoardVO vo=dao.boardDetailData(type,n);
     	 name.setText(vo.getName());
     	 no.setText(String.valueOf(vo.getNo()));
@@ -116,17 +117,40 @@ implements ActionListener
 			cp.bUpdate.pwdPf.setText("");
 			String strNo=no.getText();
 			ReplyBoardDAO dao=ReplyBoardDAO.newInstance();
-			ReplyBoardVO vo=dao.boardUpdateData(Integer.parseInt(strNo));
+			ReplyBoardVO vo=
+					dao.boardUpdateData(Integer.parseInt(strNo));
 			cp.card.show(cp, "BUPDATE");
 			cp.bUpdate.print(vo);
 		}
 		else if(e.getSource()==b2)// 삭제
 		{
-			
+			String strNo=no.getText();
+			cp.bDelete.pf.setText("");
+			// 화면 이동 
+			cp.card.show(cp,"BDELETE");
+			// strNo 전송 
+			cp.bDelete.noLa.setText(strNo);
+			cp.bDelete.pf.requestFocus();
 		}
+		/*
+		 *   윈도우 => 화면 변경 => 메모리 해제 
+		 *           => 초기화가 안된다 
+		 *   웹 => list.jsp => 생성 
+		 *         list.jsp => 해제 , 생성 
+		 *         -------- 자동으로 자바로 변경
+		 */
 		else if(e.getSource()==b4)// 답변
 		{
-			
+			String strNo=no.getText(); // 번호 
+			// 초기화
+			cp.bReply.nameTf.setText("");
+			cp.bReply.subTf.setText("");
+			cp.bReply.ta.setText("");
+			cp.bReply.pwdPf.setText("");
+			// 화면 이동 
+			cp.card.show(cp, "BREPLY");
+			// => strNo을 전송 
+			cp.bReply.noLa.setText(strNo);
 		}
 	}
 }

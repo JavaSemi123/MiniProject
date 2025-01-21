@@ -9,6 +9,7 @@ import com.sist.vo.*;
 // JSP => DataBase : React/Vue/Ajax => DataBase연동
 // 사용자 입력 => 오라클에 저장 => 화면 이동(목록)
 public class BoardReply extends JPanel
+implements ActionListener
 {
     JLabel titleLa,nameLa,subLa,contLa,pwdLa,noLa;
     JTextField nameTf,subTf;
@@ -66,5 +67,67 @@ public class BoardReply extends JPanel
     	p.setBounds(100, 435, 535, 35);
     	add(p);
     	
+    	b1.addActionListener(this);// onClick="함수"
+    	b2.addActionListener(this);// onClick="함수"
     }
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource()==b1)
+		{
+			// 실제 수정 
+			String name=nameTf.getText();
+			// NOT NULL을 설정한 경우 => 반드시 입력 유도 
+			if(name.trim().length()<1)
+			{
+				nameTf.requestFocus();
+				return;
+			}
+			String subject=subTf.getText();
+			// NOT NULL을 설정한 경우 => 반드시 입력 유도 
+			if(subject.trim().length()<1)
+			{
+				subTf.requestFocus();
+				return;
+			}
+			
+			String content=ta.getText();
+			// NOT NULL을 설정한 경우 => 반드시 입력 유도 
+			if(content.trim().length()<1)
+			{
+				ta.requestFocus();
+				return;
+			}
+			
+			String pwd=String.valueOf(pwdPf.getPassword());
+			// NOT NULL을 설정한 경우 => 반드시 입력 유도 
+			if(pwd.trim().length()<1)
+			{
+				pwdPf.requestFocus();
+				return;
+			}
+			
+			String no=noLa.getText();
+			
+			// no를 전송 
+			ReplyBoardVO vo=new ReplyBoardVO();
+			vo.setName(name);
+			vo.setSubject(subject);
+			vo.setContent(content);
+			vo.setPwd(pwd);
+			
+			
+			// 오라클 연결 
+			ReplyBoardDAO dao=ReplyBoardDAO.newInstance();
+			dao.replyInsert(Integer.parseInt(no), vo);
+			
+			// 목록 
+			cp.card.show(cp, "BLIST");
+			cp.bList.print();
+		}
+		else if(e.getSource()==b2)
+		{
+			cp.card.show(cp, "BDETAIL");
+		}
+	}
 }

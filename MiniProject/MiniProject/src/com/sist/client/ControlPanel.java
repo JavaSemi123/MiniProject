@@ -16,6 +16,9 @@ public class ControlPanel extends JPanel{
     BoardInsert bInsert;
     BoardDetail bDetail;
     BoardUpdate bUpdate;
+    BoardReply bReply;
+    BoardDelete bDelete;
+    NewsPanel np;
     CardLayout card=new CardLayout();
     public ControlPanel()
     {
@@ -46,6 +49,15 @@ public class ControlPanel extends JPanel{
     	
     	bUpdate=new BoardUpdate(this);
     	add("BUPDATE",bUpdate);
+    	
+    	bReply=new BoardReply(this);
+    	add("BREPLY",bReply);
+    	
+    	bDelete=new BoardDelete(this); // => jsp(메소드) => URL주소
+    	add("BDELETE",bDelete);
+    	
+    	np=new NewsPanel(this);
+    	add("NP",np);
     }
 	
 }

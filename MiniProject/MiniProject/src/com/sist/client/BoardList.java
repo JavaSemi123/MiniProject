@@ -29,8 +29,8 @@ implements ActionListener,MouseListener
     	titleLa=new JLabel("게시판",JLabel.CENTER);// <table>
     	titleLa.setFont(new Font("맑은 고딕",Font.BOLD,30)); //<h3></h3>
     	
-    	String[] col={"번호","제목","이름","작성일","조회수"};//<tr><th></th>....</tr>
-    	String[][] row=new String[0][5];
+    	String[] col={"번호","","제목","이름","작성일","조회수"};//<tr><th></th>....</tr>
+    	String[][] row=new String[0][6];
     	// 한줄에 5개 데이터를 첨부 
     	model=new DefaultTableModel(row,col) // 데이터 관리
     	{
@@ -52,23 +52,24 @@ implements ActionListener,MouseListener
     		{
     			column.setPreferredWidth(50);
     		}
-    		else if(i==1)
+    		else if(i==2)
     		{
     			column.setPreferredWidth(350);
     		}
-    		else if(i==2)
+    		else if(i==3)
     		{
     			column.setPreferredWidth(100);
     		}
-    		else if(i==3)
+    		else if(i==4)
     		{
     			column.setPreferredWidth(150);
     		}
-    		else if(i==4)
+    		else if(i==5)
     		{
     			column.setPreferredWidth(50);
     		}
     	}
+    	table.getColumnModel().removeColumn(table.getColumnModel().getColumn(1));
     	table.getTableHeader().setReorderingAllowed(false);
     	table.setShowVerticalLines(false);
     	table.setRowHeight(30);
@@ -109,8 +110,12 @@ implements ActionListener,MouseListener
     	}
     	// 데이터 받기 
     	List<ReplyBoardVO> list=dao.boardListData(curpage);
-    	totalpage=dao.boardTotalPage();
-    	
+    	int count=dao.boardRowCount();
+    	totalpage=(int)(Math.ceil(count/10.0));
+    	count=count-((curpage*10)-10);
+        // 번호를 순차적 출력 0 -10 -20 -30
+        // 50~ 40 30 20 10 
+        // 16 => 6();
     	// 출력 => 테이블 
     	for(ReplyBoardVO vo:list)
     	{
@@ -124,6 +129,7 @@ implements ActionListener,MouseListener
     			}
     			String subject="<html><body>"+s+"<font color=red>☞</font>"+vo.getSubject()+"</body></html>";
     			String[] data= {
+    				String.valueOf(count),
     				String.valueOf(vo.getNo()),
     				subject,
     				vo.getName(),
@@ -135,6 +141,7 @@ implements ActionListener,MouseListener
     		else // 답변이 아닌 경우 => 새글 
     		{
     			String[] data= {
+        				String.valueOf(count),
         				String.valueOf(vo.getNo()),
         				vo.getSubject(),
         				vo.getName(),
@@ -143,6 +150,7 @@ implements ActionListener,MouseListener
         			};
     			model.addRow(data);
     		}
+    		count--;
     	}
     	pageLa.setText(curpage+" page / "+totalpage+" pages");
     }
@@ -173,7 +181,7 @@ implements ActionListener,MouseListener
 			{
 				curpage++;
 				print();
-			}
+			}	
 		}
 	}
 	@Override
@@ -185,10 +193,8 @@ implements ActionListener,MouseListener
 			{
 				int row=table.getSelectedRow();
 				// 클릭 위치 => 게시물 번호 읽기
-				String no=model.getValueAt(row, 0).toString();
-				
-				ReplyBoardVO vo=dao.boardDetailData(1,Integer.parseInt(no));
-				
+				String no=model.getValueAt(row, 1).toString();
+								
 				// 윈도우 / 웹 => 정수(X) , 문자열 => 문자열=>정수형으로 변경 
 				cp.card.show(cp,"BDETAIL");
 				// Database연동 

@@ -206,6 +206,7 @@ implements ActionListener,Runnable,MouseListener
 						+"생년월일:"+vo.getBirthday().toString()+"\n"
 						+"주소:"+vo.getAddress()+"\n";
 			JOptionPane.showMessageDialog(this, info);
+			selectRow=-1;
 		}
 		// chat처리 
 		else if(e.getSource()==cp.cp.tf)
@@ -240,7 +241,7 @@ implements ActionListener,Runnable,MouseListener
 		}
 		else if(e.getSource()==mf.b7)
 		{
-			cp.card.show(cp, "DETAIL");
+			cp.card.show(cp, "NP");
 		}
 		else if(e.getSource()==mf.b5)
 		{
@@ -272,7 +273,7 @@ implements ActionListener,Runnable,MouseListener
 		// TODO Auto-generated method stub
 		if(e.getSource()==cp.cp.table)
 		{
-			int selectRow=cp.cp.table.getSelectedRow();
+			selectRow=cp.cp.table.getSelectedRow();
 			String myId=getTitle();
 			String id=cp.cp.model.getValueAt(selectRow, 0).toString();
 			if(myId.equals(id))

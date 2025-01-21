@@ -143,8 +143,7 @@ implements ActionListener
 			}
 			else // 비밀번호가 틀리다
 			{
-				JOptionPane.showMessageDialog(this, 
-						"비밀번호가 틀립니다\n다시 입력하세요");
+				JOptionPane.showMessageDialog(this, "비밀번호가 틀립니다\n다시 입력하세요");
 				pwdPf.setText("");
 				pwdPf.requestFocus();
 			}

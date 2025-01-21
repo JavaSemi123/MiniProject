@@ -115,7 +115,8 @@ public class MembershipDAO {
 			vo.setSex(rs.getString(2));
 			vo.setEmail(rs.getString(3));
 			vo.setAddress(rs.getString(4));
-			vo.setBirthday(rs.getDate(5));			
+			vo.setBirthday(rs.getDate(5));		
+			rs.close();
 		}catch (Exception ex) {
 			// TODO: handle exception
 			ex.printStackTrace();
