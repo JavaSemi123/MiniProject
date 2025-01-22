@@ -15,7 +15,7 @@ implements MouseListener,ActionListener
 		ControlPanel cp;
 		JPanel pan=new JPanel();
 		// 이미지 출력 
-		JButton b1,b2; // 이전 , 다음 
+		JButton prev,next; // 이전 , 다음 
 		JLabel la=new JLabel("0 page / 0 pages");
 		JLabel[] imgs=new JLabel[12];
 		
@@ -32,15 +32,15 @@ implements MouseListener,ActionListener
 	    	pan.setLayout(new GridLayout(3,4,5,5));
 	    	add("Center",pan);
 	    	
-	    	b1=new JButton("이전");
-	    	b2=new JButton("다음");
+	    	prev=new JButton("이전");
+	    	next=new JButton("다음");
 	    	JPanel p=new JPanel();
-	    	p.add(b1); p.add(la); p.add(b2);
+	    	p.add(prev); p.add(la); p.add(next);
 	    	// add => 코딩 순서로 배치
 	    	add("South",p);
 	    	
-	    	b1.addActionListener(this);//이전
-	    	b2.addActionListener(this);//다음 
+	    	prev.addActionListener(this);//이전
+	    	next.addActionListener(this);//다음 
 	    	print();
 	    }
 	    // 초기화 
@@ -74,6 +74,9 @@ implements MouseListener,ActionListener
 	    		}catch(Exception ex) {}
 	    	}
 	    	la.setText(curpage+" page / "+totalpage+" pages");
+	    	
+	     	prev.setEnabled(curpage > 1);
+	        next.setEnabled(curpage < totalpage);
 	    }
 		@Override
 		public void mouseClicked(MouseEvent e) {
@@ -128,7 +131,7 @@ implements MouseListener,ActionListener
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			if(e.getSource()==b1)//이전
+			if(e.getSource()==prev)//이전
 			{
 				if(curpage>1)
 				{
@@ -137,7 +140,7 @@ implements MouseListener,ActionListener
 					print();
 				}
 			}
-			else if(e.getSource()==b2)// 다음
+			else if(e.getSource()==next)// 다음
 			{
 				if(curpage<totalpage)
 				{

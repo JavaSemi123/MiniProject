@@ -153,6 +153,9 @@ implements ActionListener,MouseListener
     		count--;
     	}
     	pageLa.setText(curpage+" page / "+totalpage+" pages");
+    	
+    	prevBtn.setEnabled(curpage > 1);
+        nextBtn.setEnabled(curpage < totalpage);
     }
 	@Override
 	public void actionPerformed(ActionEvent e) {

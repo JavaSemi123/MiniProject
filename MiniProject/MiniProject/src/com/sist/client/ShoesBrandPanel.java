@@ -95,6 +95,7 @@ implements ActionListener,MouseListener
      		}catch(Exception ex) {}
      	}
      	la.setText(curpage+" page / "+totalpage+" pages");
+     	
      }
      public void printData(List<ShoesVO> list) {
  	    pan.removeAll();
@@ -113,6 +114,9 @@ implements ActionListener,MouseListener
  	    }
  	    la.setText(curpage + " page / " + totalpage + " pages");
  	    pan.validate();
+ 	    
+     	prev.setEnabled(curpage > 1);
+        next.setEnabled(curpage < totalpage);
  	}
 
 	@Override

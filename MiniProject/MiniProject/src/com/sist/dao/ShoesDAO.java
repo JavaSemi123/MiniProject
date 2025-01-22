@@ -173,18 +173,30 @@ public class ShoesDAO {
 		}
 		return total;
 	}
-	public List<ShoesVO> shoesFindData(String name_kor)
+//	+"FROM shoes "
+//	+"WHERE name_kor LIKE '%'||?||'%' AND rownum<=10 "
+//	+"ORDER BY goods_id ASC";
+	public List<ShoesVO> shoesFindData(int page, String name_kor)
 	{
 		List<ShoesVO> list=new ArrayList<ShoesVO>();
 		try
 		{
 			getConnection();
-			String sql="select goods_id,img,name_kor,brand,color,rt_price "
-				   +"FROM shoes "
-				   +"WHERE name_kor LIKE '%'||?||'%' AND rownum<=10 "
-				   +"ORDER BY goods_id ASC";
+			String sql="SELECT goods_id,img,name_kor,brand,color,rt_price "
+					+ "FROM (SELECT goods_id,img,name_kor,brand,color,rt_price,rownum as num "
+					+ "FROM (SELECT /*+ index_asc(shoes sh_goods_id_pk)*/goods_id,img,name_kor,brand,color,rt_price "
+					+ "FROM shoes WHERE name_kor LiKE '%'||?||'%')) "
+					+ "WHERE num BETWEEN ? and ? "
+					+ "ORDER BY goods_id ASC";
 			ps=conn.prepareStatement(sql);
 			ps.setString(1, name_kor);
+			int rowSize=10;
+			int start=(rowSize*page)-(rowSize-1);
+			int end=rowSize*page;
+   
+			ps.setInt(2, start);
+			ps.setInt(3, end);
+		   
 			ResultSet rs=ps.executeQuery();
 			while(rs.next())
 			{
@@ -207,6 +219,31 @@ public class ShoesDAO {
 			disConnection();
 		}
 		return list;
+	}
+	public int shoesFindTotalPage(String name_kor)
+	{
+		int total=0;
+		try
+		{
+			getConnection();
+			String sql="SELECT CEIL(COUNT(*)/12.0) "
+					+"FROM shoes "
+					+"WHERE name_kor LIKE '%'||?||'%'";
+			ps=conn.prepareStatement(sql);
+			ps.setString(1, name_kor);
+			ResultSet rs=ps.executeQuery();
+			rs.next();
+			total=rs.getInt(1);
+			rs.close();
+		}catch (Exception ex) {
+			// TODO: handle exception
+			ex.printStackTrace();
+		}
+		finally
+		{
+			disConnection();
+		}
+		return total;
 	}
 	public ShoesVO shoesDetailData(int goods_id)
 	{

@@ -9,6 +9,7 @@ import com.sist.vo.*;
 import com.sist.commons.ImageChange;
 import com.sist.dao.*;
 import java.util.List;
+import java.util.Scanner;
 // => 서버 연동 (X) 
 public class ShoesFindPanel extends JPanel
 implements ActionListener,MouseListener
@@ -17,14 +18,24 @@ implements ActionListener,MouseListener
      JTable table; // 모양관리 
      DefaultTableModel model; // 데이터 관리
      // MVC구조 
-     JTextField tf; 
+     JButton prev,next;
+ 	 JLabel la=new JLabel("0 page / 0 pages");
+ 	 JLabel[] imgs=new JLabel[12];
+ 	 int curpage=1;
+ 	 int totalpage=0;
+ 	 JTextField tf; 
      JButton b;// 검색 
      TableColumn column;
      ShoesDAO dao=ShoesDAO.newInstance();
+     String name_kor="";
      public ShoesFindPanel(ControlPanel cp)
      {
     	 this.cp=cp;
-    	 String[] col={
+    	 
+    	 prev=new JButton("이전");
+ 		 next=new JButton("다음");
+    	
+ 		 String[] col={
     		"번호","사진","이름","브랜드","색상","가격"
     	 };
     	 Object[][] row=new Object[0][6];
@@ -81,58 +92,85 @@ implements ActionListener,MouseListener
     	 tf.setBounds(20, 20, 200, 30);
     	 b.setBounds(225, 20, 80, 30);
     	 
-    	 js1.setBounds(20, 60, 800, 500);
+    	 js1.setBounds(20, 60, 800, 450);
     	 
-    	 add(tf); add(b); 
-    	 add(js1);
+    	 add(tf); add(b); add(js1);
     	 
     	 b.addActionListener(this);
     	 tf.addActionListener(this);
     	 table.addMouseListener(this);
+
+ 		 JPanel p2=new JPanel();
+ 		 p2.add(prev); p2.add(la); p2.add(next);
+ 		 
+		 setLayout(new BorderLayout());
+ 		 add("South",p2);
+ 		 
+    	 prev.addActionListener(this);
+ 		 next.addActionListener(this);
      }
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		if(e.getSource()==b || e.getSource()==tf)
+		if (e.getSource() == b || e.getSource() == tf) 
 		{
-			// 검색어 읽기
-			String name_kor=tf.getText();
-			if(name_kor.trim().length()<1)
-			{
-				tf.requestFocus();
-				return;
-			}
-			print(name_kor);
-		}
-	}
-	public void print(String name_kor)
-	{
-		// 테이블 데이터 지우기 
-		for(int i=model.getRowCount()-1;i>=0;i--)
+			name_kor = tf.getText().trim();
+            if (name_kor.length() < 1) 
+            {
+                tf.requestFocus();
+                return;
+            }
+			print();
+		} 
+
+		else if (e.getSource() == prev)
 		{
-			model.removeRow(i);
-		}
-		
-		// 데이터 받기 
-		List<ShoesVO> list=dao.shoesFindData(name_kor);
-		for(ShoesVO vo:list)
-		{
-			try
-			{
-				URL url=new URL(vo.getImg());
-				Image image=ImageChange.getImage(new ImageIcon(url), 200, 180);
-				Object[] data={
-					vo.getGoods_id(),
-					new ImageIcon(image),
-					vo.getName_kor(),
-					vo.getBrand(),
-					vo.getColor(),
-					vo.getRt_price()
-				};
-				model.addRow(data);
-			}catch(Exception ex){}
-		}
-	}
+            if (curpage > 1) 
+            {
+                curpage--;
+                print();
+            }
+        } 
+		else if (e.getSource() == next) 
+        {
+            if (curpage < totalpage) 
+            {
+                curpage++;
+                print();
+            }
+        }
+    }
+ 	public void print()
+ 	{
+ 		// 테이블 데이터 지우기
+        model.setRowCount(0);
+ 		
+ 		// 데이터 받기 
+      	totalpage=dao.shoesFindTotalPage(name_kor);
+ 		List<ShoesVO> list=dao.shoesFindData(curpage, name_kor);
+ 		for(ShoesVO vo:list)
+ 		{
+ 			try
+ 			{
+ 				URL url=new URL(vo.getImg());
+ 				Image image=ImageChange.getImage(new ImageIcon(url), 200, 180);
+ 				Object[] data={
+ 					vo.getGoods_id(),
+ 					new ImageIcon(image),
+ 					vo.getName_kor(),
+ 					vo.getBrand(),
+ 					vo.getColor(),
+ 					vo.getRt_price()
+ 				};
+ 				model.addRow(data);
+ 			}catch(Exception ex){}
+ 		}
+     	la.setText(curpage+" page / "+totalpage+" pages");
+     	
+     	prev.setEnabled(curpage > 1);
+        next.setEnabled(curpage < totalpage);
+ 	}
+
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -140,11 +178,11 @@ implements ActionListener,MouseListener
 		{
 			if(e.getClickCount()==2)
 			{
-			int row=table.getSelectedRow();
-			String goods_id=model.getValueAt(row, 0).toString();
-			ShoesVO vo=dao.shoesDetailData(Integer.parseInt(goods_id));
-			cp.sdp.detailPrint(3, vo);
-			cp.card.show(cp, "DETAIL");
+				int row=table.getSelectedRow();
+				String goods_id=model.getValueAt(row, 0).toString();
+				ShoesVO vo=dao.shoesDetailData(Integer.parseInt(goods_id));
+				cp.sdp.detailPrint(3, vo);
+				cp.card.show(cp, "DETAIL");
 			}
 		}
 	}
